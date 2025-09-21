@@ -4,6 +4,8 @@
 
 Built using **n8n automation**, **Google Gemini LLM**, and **Postgres**.
 
+🎥 **[Project Demo (Google Drive Link)]([https://drive.google.com/your-demo-link-here](https://drive.google.com/file/d/1mxVSjow8oQKQJ6dWUUH2JzsDZzsFIcPS/view?usp=sharing))**
+
 ---
 
 ## ✨ Use Case
