@@ -62,3 +62,29 @@ The agent will automatically:
    ```bash
    git clone https://github.com/yourusername/nat-lang-to-sql-agent.git
    cd nat-lang-to-sql-agent
+
+2. **Import Workflows**
+   - Open **n8n** (cloud or local setup)
+   - Import both JSON workflows from the `/workflows/` folder
+  
+3. **Connect Postgres DB**
+   - Update Postgres credentials inside the workflow
+  
+4. **Start Chatting!**
+   **Example:**
+   **Input:**  
+   - Show me sales for India in 2020
+   **Output:**
+   - The total sales quantity for India in 2020 was 8,595,336.
+  
+
+---
+
+## ✅ Features
+- Convert **Natural Language → SQL**  
+- Handles **follow-up questions** if query is unclear  
+- Explains gracefully when **no data is available**  
+- **Context-aware** (remembers past chat history)  
+- Works with **any Postgres database**  
+
+     
