@@ -61,7 +61,8 @@ The agent will automatically:
 1. **Clone Repo**
    ```bash
    git clone https://github.com/yourusername/nat-lang-to-sql-agent.git
-   cd nat-lang-to-sql-agent
+   cd natural-language-sql-agent
+
 
 2. **Import Workflows**
    - Open **n8n** (cloud or local setup)
