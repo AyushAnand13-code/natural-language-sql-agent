@@ -1,0 +1,201 @@
+{
+  "name": "Nat-lang-to-sql-query-agent",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "initialMessages": "Hey, this is your SQL buddy! What insights do you need?",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "28e826ca-8763-4375-b09f-45c7e5d530a8",
+      "name": "When chat message received",
+      "webhookId": "ffe18ac1-20c9-44b7-b95e-97d8e6d055af"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are an AI SQL Agent designed to translate natural language queries into SQL queries for a PostgreSQL database. Your responsibilities are:\n\nUnderstand the schema: Be aware of what tables and columns are available in the Postgres database and use only valid references.\n\nQuery generation: Convert the user’s plain English questions into syntactically correct SQL queries that retrieve the requested information.\n\nClarifications: If a user’s question is ambiguous, incomplete, or unclear, ask follow-up questions to confirm the exact intent before generating SQL.\n\nUnavailable data: If the database does not contain the necessary tables or columns to answer a question, explicitly respond with:\n“There is no available data to answer the particular question, but I can help with the following details.” Then suggest related queries or available alternatives.\n\nPrecision: Always ensure queries are optimized, clear, and directly address the user’s intent.\n\nConsistency: Maintain a professional, helpful, and accurate tone."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "4cbde71c-b3b8-4620-8850-5def4dc12eb6",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        80,
+        208
+      ],
+      "id": "10535bb3-3a7f-4a39-9f9f-b511743cb8ee",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "Cb79nCZvFh5UUIvW",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        272,
+        208
+      ],
+      "id": "8579c4ff-84eb-4e36-9b54-f09b6a94647b",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Fetch the table schema",
+        "operation": "executeQuery",
+        "query": "SELECT\n    table_name,\n    column_name,\n    data_type,\n    is_nullable\nFROM\n    information_schema.columns\nWHERE\n    table_schema = 'public'  -- Or your specific schema name\nORDER BY\n    table_name,\n    ordinal_position;\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgresTool",
+      "typeVersion": 2.6,
+      "position": [
+        464,
+        208
+      ],
+      "id": "7381aff5-4c10-4d02-bde2-c9259b447a36",
+      "name": "Postgres",
+      "credentials": {
+        "postgres": {
+          "id": "smMgCzoXVEyzsBMg",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "t3fDKYWKqhT1plUt",
+          "mode": "list",
+          "cachedResultName": "sql_query_executor"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "sql_query": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('sql_query', ``, 'string') }}"
+          },
+          "matchingColumns": [
+            "sql_query"
+          ],
+          "schema": [
+            {
+              "id": "sql_query",
+              "displayName": "sql_query",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        640,
+        208
+      ],
+      "id": "0e190d22-eb6a-459e-bbf0-4915efe8baec",
+      "name": "query_executor"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "query_executor": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "0a16c0b1-86bf-4397-a85e-de3a9a63bd79",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5925c38e9d65e2db3cfb22863ce4ea6f10097cb84ae64390aab76355e7528fc0"
+  },
+  "id": "mao1zGE2kvixpwi2",
+  "tags": []
+}
